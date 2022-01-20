@@ -1,10 +1,7 @@
-from ast import Return
-from xml.dom.minidom import Document
-from model import Todo
-#mongodb driver
 import motor.motor_asyncio
+from model import Todo
 
-client = motor.motor_asyncio.AsyncIOMotorClient('Your MongoDB URL')
+client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://localhost:27017/')
 database = client.TodoList
 collection = database.todo
 
@@ -12,7 +9,7 @@ async def fetch_one_todo(title):
     document = await collection.find_one({"title": title})
     return document
 
-async def fecth_all_todos():
+async def fetch_all_todos():
     todos = []
     cursor = collection.find({})
     async for document in cursor:
@@ -21,14 +18,15 @@ async def fecth_all_todos():
 
 async def create_todo(todo):
     document = todo
-    await collection.insert_one(document)
+    result = await collection.insert_one(document)
     return document
 
-async def update_todo(title,description):
-    await collection.update_one({"title":title},{"$set":{"description":description}})
-    document = await collection.find_one({"title":title})
+
+async def update_todo(title, desc):
+    await collection.update_one({"title": title}, {"$set": {"description": desc}})
+    document = await collection.find_one({"title": title})
     return document
 
 async def remove_todo(title):
-    await collection.delete_one({"title":title})
+    await collection.delete_one({"title": title})
     return True

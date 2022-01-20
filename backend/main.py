@@ -1,4 +1,3 @@
-from urllib import response
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -9,7 +8,7 @@ app = FastAPI()
 
 from database import (
     fetch_one_todo,
-    fecth_all_todos,
+    fetch_all_todos,
     create_todo,
     update_todo,
     remove_todo,
@@ -26,39 +25,38 @@ app.add_middleware(
 )
 
 @app.get("/")
-def read_root():
-    return {"Working": "Fine"}
+async def read_root():
+    return {"Hello": "World"}
 
 @app.get("/api/todo")
 async def get_todo():
-    response = await fecth_all_todos()
+    response = await fetch_all_todos()
     return response
 
-@app.get("/api/todo{title}", response_model=Todo)
-async def get_todo_by_id(title):
+@app.get("/api/todo/{title}", response_model=Todo)
+async def get_todo_by_title(title):
     response = await fetch_one_todo(title)
     if response:
         return response
-    raise HTTPException(404, f"No Such Todo With Such Title {title}")
+    raise HTTPException(404, f"There is no todo with the title {title}")
 
-@app.post("/api/todo", response_model=Todo)
+@app.post("/api/todo/", response_model=Todo)
 async def post_todo(todo: Todo):
     response = await create_todo(todo.dict())
     if response:
         return response
-    raise HTTPException(400, f"Todo With Such Title Already Exists or Something Went Wrong")
+    raise HTTPException(400, "Something went wrong")
 
-@app.put("/api/todo{title}", response_model=Todo)
-async def put_todo(title: str, description: str):
-    response = await update_todo(title, description)
+@app.put("/api/todo/{title}/", response_model=Todo)
+async def put_todo(title: str, desc: str):
+    response = await update_todo(title, desc)
     if response:
         return response
-    raise HTTPException(404, f"No Such Todo With Such Title {title}")
+    raise HTTPException(404, f"There is no todo with the title {title}")
 
-
-@app.delete("/api/todo{title}")
+@app.delete("/api/todo/{title}")
 async def delete_todo(title):
     response = await remove_todo(title)
     if response:
-        return response
-    raise HTTPException(404, f"No Such Todo With Such Title {title}")
+        return "Successfully deleted todo"
+    raise HTTPException(404, f"There is no todo with the title {title}")
