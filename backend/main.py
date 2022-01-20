@@ -2,6 +2,7 @@ from urllib import response
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from model import Todo
 
 #app object
 app = FastAPI()
@@ -33,19 +34,31 @@ async def get_todo():
     response = await fecth_all_todos()
     return response
 
-@app.get("/api/todo{id}")
-async def get_todo_by_id(id):
-    return 1
+@app.get("/api/todo{title}", response_model=Todo)
+async def get_todo_by_id(title):
+    response = await fetch_one_todo(title)
+    if response:
+        return response
+    raise HTTPException(404, f"No Such Todo With Such Title {title}")
 
-@app.post("/api/todo")
-async def post_todo(todo):
-    return 1
+@app.post("/api/todo", response_model=Todo)
+async def post_todo(todo: Todo):
+    response = await create_todo(todo.dict())
+    if response:
+        return response
+    raise HTTPException(400, f"Todo With Such Title Already Exists or Something Went Wrong")
 
-@app.put("/api/todo{id}")
-async def put_todo(id, data):
-    return 1
+@app.put("/api/todo{title}", response_model=Todo)
+async def put_todo(title: str, description: str):
+    response = await update_todo(title, description)
+    if response:
+        return response
+    raise HTTPException(404, f"No Such Todo With Such Title {title}")
 
 
-@app.delete("/api/todo{id}")
-async def delete_todo(id):
-    return 1
+@app.delete("/api/todo{title}")
+async def delete_todo(title):
+    response = await remove_todo(title)
+    if response:
+        return response
+    raise HTTPException(404, f"No Such Todo With Such Title {title}")
