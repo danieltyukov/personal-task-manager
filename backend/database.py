@@ -21,7 +21,7 @@ async def fecth_all_todos():
 
 async def create_todo(todo):
     document = todo
-    result = await collection.insert_one(document)
+    await collection.insert_one(document)
     return document
 
 async def update_todo(title,description):

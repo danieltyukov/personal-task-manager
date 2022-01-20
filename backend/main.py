@@ -1,9 +1,18 @@
-from fastapi import FastAPI
+from urllib import response
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 
 #app object
 app = FastAPI()
+
+from database import (
+    fetch_one_todo,
+    fecth_all_todos,
+    create_todo,
+    update_todo,
+    remove_todo,
+)
 
 origins = ['https://localhost:3000']
 
@@ -17,11 +26,12 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"Ping": "Pong"}
+    return {"Working": "Fine"}
 
 @app.get("/api/todo")
 async def get_todo():
-    return 1
+    response = await fecth_all_todos()
+    return response
 
 @app.get("/api/todo{id}")
 async def get_todo_by_id(id):
