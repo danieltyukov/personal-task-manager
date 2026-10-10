@@ -42,7 +42,7 @@ async def get_todo_by_title(title):
 
 @app.post("/api/todo/", response_model=Todo)
 async def post_todo(todo: Todo):
-    response = await create_todo(todo.dict())
+    response = await create_todo(todo.model_dump())
     if response:
         return response
     raise HTTPException(400, "Something went wrong")
