@@ -29,5 +29,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "lint": "eslint ."
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }
